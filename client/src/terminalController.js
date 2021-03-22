@@ -1,9 +1,7 @@
 export default class TerminalController {
-    constructor() {
-
-    }
+    constructor() {}
 
     async initializeTable(eventEmitter) {
-        console.log('Inicializou')   ;
+        console.log('Inicializou');
     }
 }

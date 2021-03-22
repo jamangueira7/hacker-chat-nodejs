@@ -1,7 +1,7 @@
 import Events from 'events';
-import TerminalController from './client/src/terminalController';
+import TerminalController from './src/terminalController.js';
 
 const componentEmitter = new Events();
-const controller = new TerminalController();
 
+const controller = new TerminalController();
 await controller.initializeTable(componentEmitter);
