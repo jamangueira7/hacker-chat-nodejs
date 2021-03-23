@@ -1,7 +1,25 @@
 import ComponentsBuilder from './components.js';
 
 export default class TerminalController {
+    #usersColors = new Map();
+
     constructor() {}
+
+    #pickCollor() {
+        return `#` + ((1 << 24) * Math.random() | 0).toString(16) + '-fg';
+    }
+
+
+    #getUserColor(userName) {
+        if(this.#usersColors.has(userName)) {
+            return this.#usersColors.get(userName);
+        }
+
+        const color = this.#pickCollor();
+        this.#usersColors.set(userName, color);
+
+        return color;
+    }
 
     #onInputReceived(eventEmitter) {
         return function () {
@@ -14,7 +32,9 @@ export default class TerminalController {
     #onMessageReceived({ screen, chat }) {
         return msg => {
             const { userName, message } = msg;
-            chat.addItem(`{bold}${userName}{/}: ${message}`);
+            const color = this.#getUserColor(userName);
+
+            chat.addItem(`{${color}}{bold}${userName}{/}: ${message}`);
             screen.render();
         };
     }
