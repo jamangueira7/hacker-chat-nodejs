@@ -83,6 +83,7 @@ export default class ComponentsBuilder {
         const components = {
             screen: this.#screen,
             input: this.#input,
+            chat: this.#chat,
         };
 
         return components;

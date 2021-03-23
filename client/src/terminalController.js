@@ -11,8 +11,16 @@ export default class TerminalController {
         }
     }
 
+    #onMessageReceived({ screen, chat }) {
+        return msg => {
+            const { userName, message } = msg;
+            chat.addItem(`{bold}${userName}{/}: ${message}`);
+            screen.render();
+        };
+    }
+
     #registerEvents(eventEmitter, components) {
-        eventEmitter.on('message:received')
+        eventEmitter.on('message:received', this.#onMessageReceived(components))
     }
 
     async initializeTable(eventEmitter) {
@@ -23,8 +31,15 @@ export default class TerminalController {
             .setChatComponent()
             .build();
 
+        this.#registerEvents(eventEmitter, components);
+
         components.input.focus();
         components.screen.render();
+
+        setInterval(() => {
+            eventEmitter.emit('message:received', { message: 'hello word!!', userName: 'joao' });
+            eventEmitter.emit('message:received', { message: 'ta indo!', userName: 'priscila' });
+        }, 2000);
 
     }
 }
