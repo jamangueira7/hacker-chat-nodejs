@@ -1,4 +1,5 @@
 import ComponentsBuilder from './components.js';
+import { constants } from './constants.js';
 
 export default class TerminalController {
     #usersColors = new Map();
@@ -49,9 +50,26 @@ export default class TerminalController {
         };
     }
 
+    #onStatusChange({ screen, status }) {
+        return users => {
+            //vamos pegar o primeiro elemento da lista
+            const { content } = status.items.shift()
+            status.clearItems();
+            status.addItem(content);
+
+            users.forEach((userName) => {
+                const color = this.#getUserColor(userName);
+                status.addItem(`{${color}}{bold}${userName}{/}`);
+            });
+
+            screen.render();
+        };
+    }
+
     #registerEvents(eventEmitter, components) {
-        eventEmitter.on('message:received', this.#onMessageReceived(components));
-        eventEmitter.on('activityLog:update', this.#onLogChange(components));
+        eventEmitter.on(constants.events.app.MESSAGE_RECEIVED, this.#onMessageReceived(components));
+        eventEmitter.on(constants.events.app.ACTIVITYLOG_UPDATED, this.#onLogChange(components));
+        eventEmitter.on(constants.events.app.STATUS_UPDATED, this.#onStatusChange(components));
     }
 
     async initializeTable(eventEmitter) {
@@ -68,14 +86,5 @@ export default class TerminalController {
 
         components.input.focus();
         components.screen.render();
-
-        setInterval(() => {
-            eventEmitter.emit('message:received', { message: 'hello word!!', userName: 'joao' });
-            eventEmitter.emit('activityLog:update', 'joao join' );
-            eventEmitter.emit('message:received', { message: 'ta indo!', userName: 'priscila' });
-            eventEmitter.emit('activityLog:update', 'priscila join' );
-            eventEmitter.emit('activityLog:update', 'priscila left' );
-        }, 2000);
-
     }
 }
