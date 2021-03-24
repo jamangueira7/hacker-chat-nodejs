@@ -11,6 +11,9 @@ const componentEmitter = new Events();
 const socketClient = new SocketClient(config);
 await socketClient.initialize();
 const eventManager = new EventManager({ componentEmitter, socketClient });
+const events = eventManager.getEvents();
+socketClient.attachEvents(events);
+
 const data = {
     roomId: config.room,
     userName: config.username
