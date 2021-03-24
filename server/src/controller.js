@@ -16,6 +16,14 @@ export default class Controller {
         socket.on('end', this.#onSocketClose(id));
     }
 
+    async joinRoom(socketId, data) {
+        const userData = JSON.parse(data);
+        console.log(`${userData.username} joined`, [socketId]);
+        const { roomId } = userData;
+
+        const user = this.#updateGlobalUserData(socketId, userData);
+    }
+
     #onSocketData(id) {
         return data => {
             console.log('onSocketData', data.toString());
