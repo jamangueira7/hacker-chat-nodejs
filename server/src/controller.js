@@ -21,9 +21,15 @@ export default class Controller {
 
     async joinRoom(socketId, data) {
         const userData = JSON.parse(data);
-        console.log(`${userData.username} joined`, [socketId]);
+        console.log(`${userData.userName} joined`, [socketId]);
         const { roomId } = userData;
         const users = this.#joinUserRoom(roomId, user);
+
+        const currentUsers = Array.from(users.values())
+            .map(({ id, userName }) => ({ userName, id }));
+
+        //atualiza o usuario que conectou sobre quais usuarios já estão na sala
+        this.socketServer.sendMessage(user.socket, constants.event.UPDATE_USERS, currentUsers);
 
         const user = this.#updateGlobalUserData(socketId, userData);
     }
@@ -33,21 +39,24 @@ export default class Controller {
         userOnRoom.set(user.id, user);
         this.#rooms.set(roomId, userOnRoom);
 
-        //atualiza o usuario que conectou sobre quais usuarios já estão na sala
-        this.socketServer.sendMessage(user.socket, constants.event.UPDATE_USERS);
-
         return userOnRoom;
     }
 
     #onSocketData(id) {
         return data => {
-            console.log('onSocketData', data.toString());
+            try {
+                const { event, message } = JSON.parse(data);
+                this[event](id, message);
+            } catch (err) {
+                console.log('wrong event format!', data.toString());
+            }
+
         };
     }
 
     #onSocketClose(id) {
         return data => {
-            console.log('onSocketClosed', data.toString());
+            console.log('onSocketClosed', id);
         };
     }
 
