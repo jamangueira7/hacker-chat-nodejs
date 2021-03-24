@@ -1,5 +1,8 @@
+import { constants } from './constants.js';
+
 export default class Controller {
     #users = new Map();
+    #rooms = new Map();
 
     constructor({ socketServer }) {
         this.socketServer = socketServer;
@@ -20,8 +23,20 @@ export default class Controller {
         const userData = JSON.parse(data);
         console.log(`${userData.username} joined`, [socketId]);
         const { roomId } = userData;
+        const users = this.#joinUserRoom(roomId, user);
 
         const user = this.#updateGlobalUserData(socketId, userData);
+    }
+
+    #joinUserRoom(roomId, user) {
+        const userOnRoom = this.#rooms.get(roomId) ?? new Map();
+        userOnRoom.set(user.id, user);
+        this.#rooms.set(roomId, userOnRoom);
+
+        //atualiza o usuario que conectou sobre quais usuarios já estão na sala
+        this.socketServer.sendMessage(user.socket, constants.event.UPDATE_USERS);
+
+        return userOnRoom;
     }
 
     #onSocketData(id) {
