@@ -35,10 +35,11 @@ const socketServer = new SocketServer({ port });
 const server = await socketServer.initialize(eventEmitter);
 console.log('socket server is running att', server.address().port);
 
-const controller = new Controller();
-eventEmitter.on(constants.event.NEW_USER_CONNECTED, (socket) => {
-
-}
+const controller = new Controller({ socketServer });
+eventEmitter.on(
+    constants.event.NEW_USER_CONNECTED,
+    controller.onNewConnection.bind(controller)
+);
 /*eventEmitter.on(constants.event.NEW_USER_CONNECTED, (socket) => {
     console.log('new connection', socket.id);
 
