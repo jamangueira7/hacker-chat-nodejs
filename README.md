@@ -19,7 +19,7 @@ Esse projeto foi desenvolvido com as seguintes tecnologias:
 
 ## 💻 Projeto
 
-Projeto de uma API sem nenhuma ferramente para auxiliar o Node.js.
+Projeto de um chat no terminal.
 
 Projeto do canal [Erick Wendel](https://www.youtube.com/channel/UCh84012dEUE076wM2CVFN9A) -  #SemanaJSExpert 3.0.
 
